@@ -24,7 +24,7 @@ Here are some example of constraints that we have documented on our website :
 By overcoming those constraints you will learn new ways of designing your code that you will be able to use in your day-to-day.
 ```
 
-![Welcome](02. xtrem t.d.d/docs/img/xtrem-tdd-logo.png)
+![Welcome](02.xtrem-t.d.d/docs/img/xtrem-tdd-logo.png)
 
 #### Workshop structure
 We have structured this workshop using the [4C model](https://www.bowperson.com/2017/11/reposting-a-quick-guide-to-the-4cs-map/) :
@@ -35,7 +35,7 @@ We have structured this workshop using the [4C model](https://www.bowperson.com/
 - `Conclusion` :  Learners summarize what they have learned
 
 ## Workshop
-- [Connection](02. xtrem t.d.d/docs/connection.md)
-- [Concepts](02. xtrem t.d.d/docs/concepts.md)
-- [Concrete Practice](02. xtrem t.d.d/docs/concrete-practice.md)
-- [Conclusion](02. xtrem t.d.d/docs/conclusion.md)
+- [Connection](02.xtrem-t.d.d/docs/connection.md)
+- [Concepts](02.xtrem-t.d.d/docs/concepts.md)
+- [Concrete Practice](02.xtrem-t.d.d/docs/concrete-practice.md)
+- [Conclusion](02.xtrem-t.d.d/docs/conclusion.md)

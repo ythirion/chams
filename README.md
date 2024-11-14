@@ -83,5 +83,5 @@ A 3-phase process :
 ![TDD cycle](img/tdd-rules.png)
 
 ## Sessions
-- [Session 1](Session%201.md)
-- [Session 2](Session%202.md)
+- [Session 1](Session-1.md)
+- [Session 2](Session-2.md)
