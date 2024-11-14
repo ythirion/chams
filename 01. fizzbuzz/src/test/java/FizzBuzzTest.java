@@ -1,5 +1,4 @@
 import com.practice.FizzBuzz;
-import net.bytebuddy.asm.MemberSubstitution;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -8,13 +7,17 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class FizzBuzzTest {
-    public static Stream<Arguments> fizzFeeder() {
+    public static Stream<Arguments> fizzBuzzFeeder() {
         return Stream.of(
-                Arguments.of(3),
-                Arguments.of(6),
-                Arguments.of(9)
+                Arguments.of(3, "Fizz"),
+                Arguments.of(6, "Fizz"),
+                Arguments.of(9, "Fizz"),
+                Arguments.of(5, "Buzz"),
+                Arguments.of(10, "Buzz"),
+                Arguments.of(20, "Buzz")
         );
     }
     // si 3, 6, 9 ... -> Fizz
@@ -24,15 +27,14 @@ class FizzBuzzTest {
     // entre 1 et 100
 
     @ParameterizedTest
-    @MethodSource("fizzFeeder")
-    void testConvert_whenGivenAMultipleOf3_shouldReturnFizz(int number) {
-        assertThat(FizzBuzz.convert(number)).isEqualTo("Fizz");
+    @MethodSource("fizzBuzzFeeder")
+    void testConvert_MultipleOf3_shouldReturnFizzOrBuzz(int number, String result) {
+        assertThat(FizzBuzz.convert(number)).isEqualTo(result);
     }
 
     @Test
-    void testConvert_whenGiven5_shouldReturnFizz() {
-        assertThat(FizzBuzz.convert(5)).isEqualTo("Buzz");
+    void testConvert_WhenOutOfRange_throwException() {
+        assertThatThrownBy(() -> FizzBuzz.convert(-1)).isInstanceOf(IllegalArgumentException.class);
     }
-
 
 }
