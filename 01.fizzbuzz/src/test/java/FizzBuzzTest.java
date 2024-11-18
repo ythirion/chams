@@ -10,17 +10,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class FizzBuzzTest {
-    public static Stream<Arguments> fizzBuzzFeeder() {
-        return Stream.of(
-                Arguments.of(3, "Fizz"),
-                Arguments.of(6, "Fizz"),
-                Arguments.of(9, "Fizz"),
-                Arguments.of(5, "Buzz"),
-                Arguments.of(10, "Buzz"),
-                Arguments.of(15, "FizzBuzz"),
-                Arguments.of(20, "Buzz")
-        );
-    }
     // si 3, 6, 9 ... -> Fizz
     // si mul 5 -> Buzz
     // si mul 3 & 5 -> com.practice.FizzBuzz
@@ -33,7 +22,8 @@ class FizzBuzzTest {
         assertThat(FizzBuzz.convert(number)).isEqualTo(result);
     }
 
-    @Test
+    @ParameterizedTest
+    @MethodSource("canonicalNumbersFeeder")
     void testConvert_NormalNumber_shouldBeReturnedAsIs() {
         assertThat(FizzBuzz.convert(2)).isEqualTo("2");
     }
@@ -41,6 +31,30 @@ class FizzBuzzTest {
     @Test
     void testConvert_WhenOutOfRange_throwException() {
         assertThatThrownBy(() -> FizzBuzz.convert(-1)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    public static Stream<Arguments> fizzBuzzFeeder() {
+        return Stream.of(
+                Arguments.of(3, "Fizz"),
+                Arguments.of(6, "Fizz"),
+                Arguments.of(9, "Fizz"),
+                Arguments.of(5, "Buzz"),
+                Arguments.of(10, "Buzz"),
+                Arguments.of(15, "FizzBuzz"),
+                Arguments.of(20, "Buzz")
+        );
+    }
+
+    public static Stream<Arguments> canonicalNumbersFeeder() {
+        return Stream.of(
+                Arguments.of(1, "1"),
+                Arguments.of(2, "2"),
+                Arguments.of(4, "4"),
+                Arguments.of(7, "7"),
+                Arguments.of(8, "8"),
+                Arguments.of(11, "11"),
+                Arguments.of(13, "13")
+        );
     }
 
 }
