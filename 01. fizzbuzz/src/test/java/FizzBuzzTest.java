@@ -17,6 +17,7 @@ class FizzBuzzTest {
                 Arguments.of(9, "Fizz"),
                 Arguments.of(5, "Buzz"),
                 Arguments.of(10, "Buzz"),
+                Arguments.of(15, "FizzBuzz"),
                 Arguments.of(20, "Buzz")
         );
     }
@@ -30,6 +31,11 @@ class FizzBuzzTest {
     @MethodSource("fizzBuzzFeeder")
     void testConvert_MultipleOf3_shouldReturnFizzOrBuzz(int number, String result) {
         assertThat(FizzBuzz.convert(number)).isEqualTo(result);
+    }
+
+    @Test
+    void testConvert_NormalNumber_shouldBeReturnedAsIs() {
+        assertThat(FizzBuzz.convert(2)).isEqualTo("2");
     }
 
     @Test
