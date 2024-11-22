@@ -36,6 +36,11 @@
             <version>${assertj.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr-test</artifactId>
+            <version>0.10.5</version>
+        </dependency>
     </dependencies>
 
     <build>

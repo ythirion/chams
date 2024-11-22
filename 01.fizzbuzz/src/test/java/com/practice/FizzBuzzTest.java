@@ -1,5 +1,7 @@
 package com.practice;
 
+import io.vavr.test.Arbitrary;
+import io.vavr.test.Property;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -8,7 +10,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class FizzBuzzTest {
 
@@ -22,11 +23,6 @@ class FizzBuzzTest {
     @MethodSource("canonicalNumbersFeeder")
     void testConvert_NormalNumber_shouldBeReturnedAsIs(int number, String result) {
         assertThat(FizzBuzz.convert(number)).isEqualTo(result);
-    }
-
-    @Test
-    void testConvert_WhenOutOfRange_throwException() {
-        assertThatThrownBy(() -> FizzBuzz.convert(-1)).isInstanceOf(IllegalArgumentException.class);
     }
 
     public static Stream<Arguments> fizzBuzzFeeder() {
@@ -55,4 +51,26 @@ class FizzBuzzTest {
         );
     }
 
+    @Test
+    void should_throw_exception_when_out_of_range() {
+        var outOfRangeNumbers = Arbitrary
+                .integer()
+                .filter(i -> i < FizzBuzz.MINIMUM || i > FizzBuzz.MAXIMUM);
+
+        Property.def("FizBuzz should fail for numbers out of range")
+                .forAll(outOfRangeNumbers)
+                .suchThat(this::throwsIllegalArgumentException)
+                .check()
+                .assertIsSatisfied();
+    }
+
+    private Boolean throwsIllegalArgumentException(Integer input) {
+        try {
+            FizzBuzz.convert(input);
+            return false;
+        }
+        catch (IllegalArgumentException e) {
+            return true;
+        }
+    }
 }
