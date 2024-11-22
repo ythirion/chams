@@ -1,4 +1,5 @@
-import com.practice.FizzBuzz;
+package com.practice;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -10,11 +11,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class FizzBuzzTest {
-    // si 3, 6, 9 ... -> Fizz
-    // si mul 5 -> Buzz
-    // si mul 3 & 5 -> com.practice.FizzBuzz
-    // sinon chiffre
-    // entre 1 et 100
 
     @ParameterizedTest
     @MethodSource("fizzBuzzFeeder")
@@ -24,8 +20,8 @@ class FizzBuzzTest {
 
     @ParameterizedTest
     @MethodSource("canonicalNumbersFeeder")
-    void testConvert_NormalNumber_shouldBeReturnedAsIs() {
-        assertThat(FizzBuzz.convert(2)).isEqualTo("2");
+    void testConvert_NormalNumber_shouldBeReturnedAsIs(int number, String result) {
+        assertThat(FizzBuzz.convert(number)).isEqualTo(result);
     }
 
     @Test
