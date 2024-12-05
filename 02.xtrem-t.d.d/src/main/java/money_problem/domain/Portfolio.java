@@ -1,37 +1,33 @@
 package money_problem.domain;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Portfolio {
 
-    private final Map<Currency, Double> lines = new HashMap<>();
+    private final List<Money> lines = new ArrayList<>();
 
     private static String formatPortfolio(Currency currency, double sum) {
         return sum + " " + currency;
     }
 
-    private double convertToCurrency(Currency currency, Map.Entry<Currency, Double> entry, Bank bank) {
+    private double convertToCurrency(Currency currency, Money money, Bank bank) {
         try {
-            return bank.convert(entry.getValue(), entry.getKey(), currency);
+            return bank.convert(money, currency);
         } catch (MissingExchangeRateException e) {
             throw new RuntimeException(e);
         }
     }
 
     public String evaluate(Bank bank, Currency currency) {
-        double sum = lines.entrySet()
+        double sum = lines
                 .stream()
-                .map(entry -> convertToCurrency(currency, entry, bank)
+                .map(money -> convertToCurrency(currency, money, bank)
                 ).reduce(0.0, Double::sum);
         return formatPortfolio(currency, sum);
     }
 
     public void addMoney(Money money) {
-        double amount = money.amount();
-        if (lines.containsKey(money.currency())) {
-            amount += lines.get(money.currency());
-        }
-        lines.put(money.currency(), amount);
+        lines.add(money);
     }
 }
