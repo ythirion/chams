@@ -7,13 +7,6 @@ public class Portfolio {
 
     private final Map<Currency, Double> lines = new HashMap<>();
 
-    public void addMoney(double amount, Currency currency) {
-        if (lines.containsKey(currency)) {
-            amount += lines.get(currency);
-        }
-        lines.put(currency, amount);
-    }
-
     private static String formatPortfolio(Currency currency, double sum) {
         return sum + " " + currency;
     }
@@ -32,5 +25,13 @@ public class Portfolio {
                 .map(entry -> convertToCurrency(currency, entry, bank)
                 ).reduce(0.0, Double::sum);
         return formatPortfolio(currency, sum);
+    }
+
+    public void addMoney(Money money) {
+        double amount = money.amount();
+        if (lines.containsKey(money.currency())) {
+            amount += lines.get(money.currency());
+        }
+        lines.put(money.currency(), amount);
     }
 }

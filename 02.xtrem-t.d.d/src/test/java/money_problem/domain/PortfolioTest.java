@@ -17,8 +17,8 @@ public class PortfolioTest {
     void testPortfolioCanEvaluateWithinTheSameCurrency() {
 
         Portfolio portfolio = new Portfolio();
-        portfolio.addMoney(5.0, Currency.USD);
-        portfolio.addMoney(10.0, Currency.USD);
+        portfolio.addMoney(new Money(5.0, Currency.USD));
+        portfolio.addMoney(new Money(10.0, Currency.USD));
 
         Assertions.assertThat(portfolio.evaluate(bank, Currency.USD)).isEqualTo("15.0 USD");
     }
@@ -29,8 +29,8 @@ public class PortfolioTest {
         bank.addExchangeRate(Currency.EUR, Currency.USD, 1.2);
 
         Portfolio portfolio = new Portfolio();
-        portfolio.addMoney(5.0, Currency.USD);
-        portfolio.addMoney(10.0, Currency.EUR);
+        portfolio.addMoney(new Money(5.0, Currency.USD));
+        portfolio.addMoney(new Money(10.0, Currency.EUR));
 
         Assertions.assertThat(portfolio.evaluate(bank, Currency.USD)).isEqualTo("17.0 USD");
     }
@@ -41,8 +41,8 @@ public class PortfolioTest {
         bank.addExchangeRate(Currency.USD, Currency.KRW, 1100);
 
         Portfolio portfolio = new Portfolio();
-        portfolio.addMoney(1.0, Currency.USD);
-        portfolio.addMoney(1100.0, Currency.KRW);
+        portfolio.addMoney(new Money(1.0, Currency.USD));
+        portfolio.addMoney(new Money(1100.0, Currency.KRW));
 
         Assertions.assertThat(portfolio.evaluate(bank, Currency.KRW)).isEqualTo("2200.0 KRW");
     }
