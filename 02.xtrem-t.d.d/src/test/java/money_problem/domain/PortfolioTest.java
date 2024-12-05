@@ -34,4 +34,16 @@ public class PortfolioTest {
 
         Assertions.assertThat(portfolio.evaluate(bank, Currency.USD)).isEqualTo("17.0 USD");
     }
+
+    @Test
+    @DisplayName("1 USD + 1100 KRW = 2200 KRW")
+    void testEvaluateMultiCurrenciesWithKoreanWon() {
+        bank.addExchangeRate(Currency.USD, Currency.KRW, 1100);
+
+        Portfolio portfolio = new Portfolio();
+        portfolio.addMoney(1.0, Currency.USD);
+        portfolio.addMoney(1100.0, Currency.KRW);
+
+        Assertions.assertThat(portfolio.evaluate(bank, Currency.KRW)).isEqualTo("2200.0 KRW");
+    }
 }
