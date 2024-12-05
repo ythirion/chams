@@ -17,14 +17,21 @@ public class Portfolio {
     public String evaluate(Currency currency) {
         double sum = lines.entrySet()
                 .stream()
-                .map(entry -> {
-                    Bank bank = Bank.withExchangeRate(entry.getKey(), currency, 1.0);
-                    try {
-                        return bank.convert(entry.getValue(), entry.getKey(), currency);
-                    } catch (MissingExchangeRateException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).reduce(0.0, Double::sum);
+                .map(entry -> convertToCurrency(currency, entry)
+                ).reduce(0.0, Double::sum);
+        return formatPortfolio(currency, sum);
+    }
+
+    private static String formatPortfolio(Currency currency, double sum) {
         return sum + " " + currency;
+    }
+
+    private static double convertToCurrency(Currency currency, Map.Entry<Currency, Double> entry) {
+        Bank bank = Bank.withExchangeRate(entry.getKey(), currency, 1.0);
+        try {
+            return bank.convert(entry.getValue(), entry.getKey(), currency);
+        } catch (MissingExchangeRateException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
