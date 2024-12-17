@@ -35,7 +35,7 @@ public final class Bank {
     private Money convertSafely(Money money, Currency to) {
         return money.currency() == to
                 ? money
-                : new Money(money.amount() * exchangeRates.get(keyFor(money.currency(), to)), money.currency());
+                : new Money(money.amount() * exchangeRates.get(keyFor(money.currency(), to)), to);
     }
 
     private boolean canConvert(Currency from, Currency to) {
