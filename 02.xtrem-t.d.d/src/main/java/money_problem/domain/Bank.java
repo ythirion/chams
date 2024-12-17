@@ -25,18 +25,17 @@ public final class Bank {
         return from + "->" + to;
     }
 
-    public double convert(Money money, Currency to) throws MissingExchangeRateException {
+    public Money convert(Money money, Currency to) throws MissingExchangeRateException {
         if (!canConvert(money.currency(), to)) {
             throw new MissingExchangeRateException(money.currency(), to);
         }
         return convertSafely(money, to);
     }
 
-    // @TODO Return a Money here
-    private double convertSafely(Money money, Currency to) {
+    private Money convertSafely(Money money, Currency to) {
         return money.currency() == to
-                ? money.amount()
-                : money.amount() * exchangeRates.get(keyFor(money.currency(), to));
+                ? money
+                : new Money(money.amount() * exchangeRates.get(keyFor(money.currency(), to)), money.currency());
     }
 
     private boolean canConvert(Currency from, Currency to) {

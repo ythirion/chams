@@ -11,7 +11,7 @@ public class Portfolio {
         return sum + " " + currency;
     }
 
-    private double convertToCurrency(Currency currency, Money money, Bank bank) {
+    private Money convertToCurrency(Currency currency, Money money, Bank bank) {
         try {
             return bank.convert(money, currency);
         } catch (MissingExchangeRateException e) {
@@ -22,7 +22,7 @@ public class Portfolio {
     public String evaluate(Bank bank, Currency currency) {
         double sum = lines
                 .stream()
-                .map(money -> convertToCurrency(currency, money, bank)
+                .map(money -> convertToCurrency(currency, money, bank).amount()
                 ).reduce(0.0, Double::sum);
         return formatPortfolio(currency, sum);
     }
