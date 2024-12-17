@@ -3,6 +3,8 @@ package money_problem.domain;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Map.copyOf;
+
 public final class Bank {
     private final Map<String, Double> exchangeRates;
 
@@ -12,13 +14,7 @@ public final class Bank {
 
     public static Bank withExchangeRate(Currency from, Currency to, double rate) {
         var bank = new Bank(new HashMap<>());
-        bank.addExchangeRate(from, to, rate);
-
-        return bank;
-    }
-
-    public void addExchangeRate(Currency from, Currency to, double rate) {
-        exchangeRates.put(keyFor(from, to), rate);
+        return bank.addExchangeRate(from, to, rate);
     }
 
     private static String keyFor(Currency from, Currency to) {
@@ -40,5 +36,11 @@ public final class Bank {
 
     private boolean canConvert(Currency from, Currency to) {
         return from == to || exchangeRates.containsKey(keyFor(from, to));
+    }
+
+    public Bank addExchangeRate(Currency from, Currency to, double rate) {
+        HashMap<String, Double> novel = new HashMap<>(exchangeRates);
+        novel.put(keyFor(from, to), rate);
+        return new Bank(copyOf(novel));
     }
 }

@@ -10,7 +10,9 @@ public class PortfolioTest {
 
     @BeforeEach
     void setUp() {
-        bank = Bank.withExchangeRate(Currency.USD, Currency.USD, 1.0);
+        bank = Bank.withExchangeRate(Currency.USD, Currency.USD, 1.0)
+                .addExchangeRate(Currency.USD, Currency.KRW, 1100)
+                .addExchangeRate(Currency.EUR, Currency.USD, 1.2);
     }
 
     @Test
@@ -26,8 +28,6 @@ public class PortfolioTest {
     @Test
     @DisplayName("5 USD + 10 EUR = 17 USD")
     void testEvaluateMultiCurrencies() {
-        bank.addExchangeRate(Currency.EUR, Currency.USD, 1.2);
-
         Portfolio portfolio = new Portfolio();
         portfolio.addMoney(new Money(5.0, Currency.USD));
         portfolio.addMoney(new Money(10.0, Currency.EUR));
@@ -38,8 +38,6 @@ public class PortfolioTest {
     @Test
     @DisplayName("1 USD + 1100 KRW = 2200 KRW")
     void testEvaluateMultiCurrenciesWithKoreanWon() {
-        bank.addExchangeRate(Currency.USD, Currency.KRW, 1100);
-
         Portfolio portfolio = new Portfolio();
         portfolio.addMoney(new Money(1.0, Currency.USD));
         portfolio.addMoney(new Money(1100.0, Currency.KRW));
