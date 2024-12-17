@@ -1,11 +1,20 @@
 package money_problem.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Portfolio {
 
-    private final List<Money> lines = new ArrayList<>();
+    private final List<Money> lines;
+
+    public Portfolio() {
+        this(Collections.emptyList());
+    }
+
+    private Portfolio(List<Money> lines) {
+        this.lines = Collections.unmodifiableList(lines);
+    }
 
     private static String formatPortfolio(Currency currency, double sum) {
         return sum + " " + currency;
@@ -27,7 +36,9 @@ public class Portfolio {
         return formatPortfolio(currency, sum);
     }
 
-    public void addMoney(Money money) {
-        lines.add(money);
+    public Portfolio addMoney(Money money) {
+        ArrayList<Money> newLines = new ArrayList<>(lines);
+        newLines.add(money);
+        return new Portfolio(newLines);
     }
 }

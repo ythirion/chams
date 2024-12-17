@@ -18,9 +18,9 @@ public class PortfolioTest {
     @Test
     void testPortfolioCanEvaluateWithinTheSameCurrency() {
 
-        Portfolio portfolio = new Portfolio();
-        portfolio.addMoney(new Money(5.0, Currency.USD));
-        portfolio.addMoney(new Money(10.0, Currency.USD));
+        Portfolio portfolio = new Portfolio()
+                .addMoney(new Money(5.0, Currency.USD))
+                .addMoney(new Money(10.0, Currency.USD));
 
         Assertions.assertThat(portfolio.evaluate(bank, Currency.USD)).isEqualTo("15.0 USD");
     }
@@ -28,9 +28,9 @@ public class PortfolioTest {
     @Test
     @DisplayName("5 USD + 10 EUR = 17 USD")
     void testEvaluateMultiCurrencies() {
-        Portfolio portfolio = new Portfolio();
-        portfolio.addMoney(new Money(5.0, Currency.USD));
-        portfolio.addMoney(new Money(10.0, Currency.EUR));
+        Portfolio portfolio = new Portfolio()
+                .addMoney(new Money(5.0, Currency.USD))
+                .addMoney(new Money(10.0, Currency.EUR));
 
         Assertions.assertThat(portfolio.evaluate(bank, Currency.USD)).isEqualTo("17.0 USD");
     }
@@ -38,9 +38,9 @@ public class PortfolioTest {
     @Test
     @DisplayName("1 USD + 1100 KRW = 2200 KRW")
     void testEvaluateMultiCurrenciesWithKoreanWon() {
-        Portfolio portfolio = new Portfolio();
-        portfolio.addMoney(new Money(1.0, Currency.USD));
-        portfolio.addMoney(new Money(1100.0, Currency.KRW));
+        Portfolio portfolio = new Portfolio()
+                .addMoney(new Money(1.0, Currency.USD))
+                .addMoney(new Money(1100.0, Currency.KRW));
 
         Assertions.assertThat(portfolio.evaluate(bank, Currency.KRW)).isEqualTo("2200.0 KRW");
     }
