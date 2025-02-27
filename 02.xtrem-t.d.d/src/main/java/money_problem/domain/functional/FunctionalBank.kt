@@ -27,13 +27,10 @@ class FunctionalBank private constructor(private val exchangeRates: Map<String, 
 
     companion object {
         @JvmStatic
-        fun withExchangeRate(from: Currency, to: Currency, rate: Double): FunctionalBank {
-            val bank = FunctionalBank(HashMap())
-            return bank.addExchangeRate(from, to, rate)
-        }
+        fun withExchangeRate(from: Currency, to: Currency, rate: Double): FunctionalBank =
+            FunctionalBank(HashMap())
+                .addExchangeRate(from, to, rate)
 
-        private fun keyFor(from: Currency, to: Currency): String {
-            return "$from->$to"
-        }
+        private fun keyFor(from: Currency, to: Currency): String = "$from->$to"
     }
 }
