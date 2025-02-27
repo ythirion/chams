@@ -9,19 +9,15 @@ typealias ExchangeRate = Double
 class FunctionalBank private constructor(private val exchangeRates: Map<String, ExchangeRate>) {
     private fun convertSafely(money: Money, to: Currency): Money =
         if (money.currency == to) money
-        else {
-            Money(money.amount * exchangeRates.getOrDefault(keyFor(money.currency, to), 0.0), to)
-        }
+        else Money(money.amount * exchangeRates.getOrDefault(keyFor(money.currency, to), 0.0), to)
 
     private fun Currency.canConvert(to: Currency): Boolean =
         this == to || exchangeRates.containsKey(keyFor(this, to))
 
-
     fun addExchangeRate(from: Currency, to: Currency, rate: Double): FunctionalBank =
-        HashMap(exchangeRates).let { novel ->
-                novel[keyFor(from, to)] = rate
-                FunctionalBank(java.util.Map.copyOf(novel))
-            }
+        FunctionalBank(
+            exchangeRates.filterKeys { it != keyFor(from, to) } + (keyFor(from, to) to rate)
+        )
 
     fun convert(money: Money, currency: Currency): Either<MissingExchangeRateError, Money> {
         if (!money.currency.canConvert(currency)) {
