@@ -17,7 +17,6 @@ public class PortfolioTest {
 
     @Test
     void testPortfolioCanEvaluateWithinTheSameCurrency() {
-
         Portfolio portfolio = new Portfolio()
                 .addMoney(new Money(5.0, Currency.USD))
                 .addMoney(new Money(10.0, Currency.USD));
