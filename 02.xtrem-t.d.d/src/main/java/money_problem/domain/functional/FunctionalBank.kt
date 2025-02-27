@@ -1,6 +1,8 @@
 package money_problem.domain.functional
 
 import io.vavr.control.Either
+import io.vavr.control.Either.left
+import io.vavr.control.Either.right
 import money_problem.domain.Currency
 import money_problem.domain.MissingExchangeRateError
 
@@ -19,12 +21,9 @@ class FunctionalBank private constructor(private val exchangeRates: Map<String, 
             exchangeRates.filterKeys { it != keyFor(from, to) } + (keyFor(from, to) to rate)
         )
 
-    fun convert(money: Money, currency: Currency): Either<MissingExchangeRateError, Money> {
-        if (!money.currency.canConvert(currency)) {
-            return Either.left(MissingExchangeRateError(money.currency, currency))
-        }
-        return Either.right(convertSafely(money, currency))
-    }
+    fun convert(money: Money, currency: Currency): Either<MissingExchangeRateError, Money> =
+        if (!money.currency.canConvert(currency)) left(MissingExchangeRateError(money.currency, currency))
+        else right(convertSafely(money, currency))
 
     companion object {
         @JvmStatic
