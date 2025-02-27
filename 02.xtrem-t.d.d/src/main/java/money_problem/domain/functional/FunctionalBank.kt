@@ -1,8 +1,9 @@
 package money_problem.domain.functional
 
-import io.vavr.control.Either
-import io.vavr.control.Either.left
-import io.vavr.control.Either.right
+import arrow.core.Either
+import arrow.core.continuations.either
+import arrow.core.left
+import arrow.core.right
 
 typealias ExchangeRate = Double
 
@@ -19,9 +20,16 @@ class FunctionalBank private constructor(private val exchangeRates: Map<String, 
             exchangeRates.filterKeys { it != keyFor(from, to) } + (keyFor(from, to) to rate)
         )
 
-    fun convert(money: Money, currency: Currency): Either<MissingExchangeRateError, Money> =
-        if (!money.currency.canConvert(currency)) left(MissingExchangeRateError(money.currency, currency))
-        else right(convertSafely(money, currency))
+    fun convert(money: Money, currency: Currency): Either<MissingExchangeRateError, Money> = when {
+        money.currency.canConvert(currency) -> convertSafely(money, currency).right()
+        else -> MissingExchangeRateError(money.currency, currency).left()
+    }
+
+    suspend fun convertWithRoutine(money: Money, currency: Currency): Either<MissingExchangeRateError, Money> =
+        either {
+            ensure(money.currency.canConvert(currency)) { MissingExchangeRateError(money.currency, currency) }
+            convertSafely(money, currency)
+        }
 
     companion object {
         @JvmStatic
