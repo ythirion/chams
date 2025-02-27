@@ -1,6 +1,6 @@
-package money_problem.domain.functional
+package money_problem.core.core
 
-import money_problem.domain.functional.Currency.*
+import money_problem.core.core.Currency.*
 
 data class Money(val amount: Double, val currency: Currency) {
     operator fun times(times: Int): Money = Money(amount * times, currency)

@@ -1,4 +1,4 @@
-package money_problem.domain.functional
+package money_problem.core.core
 
 data class MissingExchangeRatesError(val errors: List<MissingExchangeRateError>) {
     override fun toString(): String = errors.joinToString(", ", "Missing exchange rates: ")

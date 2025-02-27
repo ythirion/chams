@@ -1,4 +1,4 @@
-package money_problem.domain.functional
+package money_problem.core.core
 
 import arrow.core.Either
 import arrow.core.left

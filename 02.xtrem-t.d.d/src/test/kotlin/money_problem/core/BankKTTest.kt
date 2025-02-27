@@ -1,12 +1,12 @@
-package money_problem.domain
+package money_problem.core
 
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.StringSpec
-import money_problem.domain.functional.Bank
-import money_problem.domain.functional.Currency.*
-import money_problem.domain.functional.MissingExchangeRateError
-import money_problem.domain.functional.Money
+import money_problem.core.core.Bank
+import money_problem.core.core.Currency.*
+import money_problem.core.core.MissingExchangeRateError
+import money_problem.core.core.Money
 
 class BankKTTest : StringSpec({
     val bank = Bank.withExchangeRate(EUR, USD, 1.2)
