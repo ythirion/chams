@@ -3,13 +3,13 @@ package money_problem.domain
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.StringSpec
+import money_problem.domain.functional.Bank
 import money_problem.domain.functional.Currency.*
-import money_problem.domain.functional.FunctionalBank
 import money_problem.domain.functional.MissingExchangeRateError
 import money_problem.domain.functional.Money
 
-class FunctionalBankKTTest : StringSpec({
-    val bank = FunctionalBank.withExchangeRate(EUR, USD, 1.2)
+class BankKTTest : StringSpec({
+    val bank = Bank.withExchangeRate(EUR, USD, 1.2)
 
     "10 EUR -> USD = 12 USD" {
         bank.convert(Money(10.0, EUR), USD) shouldBeRight Money(12.0, USD)
