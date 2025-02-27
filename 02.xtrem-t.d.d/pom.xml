@@ -17,6 +17,10 @@
         <pitest.version>1.17.1</pitest.version>
         <pitest.junit5.version>1.2.1</pitest.junit5.version>
         <kotlin.version>1.9.20</kotlin.version>
+        <vavr.version>0.10.6</vavr.version>
+        <assertj-vavr.version>0.4.3</assertj-vavr.version>
+        <kotest.version>5.8.0</kotest.version>
+        <kotlin-reflect.version>1.9.21</kotlin-reflect.version>
     </properties>
 
     <build>
@@ -85,12 +89,12 @@
         <dependency>
             <groupId>io.vavr</groupId>
             <artifactId>vavr</artifactId>
-            <version>0.10.6</version>
+            <version>${vavr.version}</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-vavr</artifactId>
-            <version>0.4.3</version>
+            <version>${assertj-vavr.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -109,27 +113,27 @@
         <dependency>
             <groupId>io.kotest</groupId>
             <artifactId>kotest-runner-junit5</artifactId>
-            <version>5.8.0</version>
+            <version>${kotest.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.kotest</groupId>
             <artifactId>kotest-runner-junit5-jvm</artifactId>
-            <version>5.8.0</version>
+            <version>${kotest.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- Kotest Assertions -->
         <dependency>
             <groupId>io.kotest</groupId>
             <artifactId>kotest-assertions-core</artifactId>
-            <version>5.8.0</version>
+            <version>${kotest.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- Kotlin Reflect (Required by Kotest) -->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-reflect</artifactId>
-            <version>1.9.21</version>
+            <version>${kotlin-reflect.version}</version>
         </dependency>
     </dependencies>
 </project>
