@@ -5,7 +5,7 @@ import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.StringSpec
 import money_problem.core.Currency.*
 
-class BankKTTest : StringSpec({
+class BankTest : StringSpec({
     val bank = Bank.withExchangeRate(EUR, USD, 1.2)
 
     "10 EUR -> USD = 12 USD" {

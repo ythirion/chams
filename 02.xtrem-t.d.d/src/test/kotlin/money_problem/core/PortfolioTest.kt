@@ -53,6 +53,7 @@ class PortfolioKTTest : StringSpec({
             )
         )
     }
+
 })
 
 fun portfolioWith(vararg moneys: Money): Portfolio = moneys.fold(Portfolio(), Portfolio::addMoney)
