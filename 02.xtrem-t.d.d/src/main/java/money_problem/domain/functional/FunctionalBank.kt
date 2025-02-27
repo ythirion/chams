@@ -3,8 +3,6 @@ package money_problem.domain.functional
 import io.vavr.control.Either
 import io.vavr.control.Either.left
 import io.vavr.control.Either.right
-import money_problem.domain.Currency
-import money_problem.domain.MissingExchangeRateError
 
 typealias ExchangeRate = Double
 

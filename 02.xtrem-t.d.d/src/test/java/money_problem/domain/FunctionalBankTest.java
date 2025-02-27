@@ -1,13 +1,13 @@
 package money_problem.domain;
 
-import io.vavr.control.Either;
 import money_problem.domain.functional.FunctionalBank;
+import money_problem.domain.functional.MissingExchangeRateError;
 import money_problem.domain.functional.Money;
-import org.assertj.vavr.api.VavrAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static money_problem.domain.Currency.*;
+import static money_problem.domain.functional.Currency.*;
+import static org.assertj.vavr.api.VavrAssertions.assertThat;
 
 class FunctionalBankTest {
     private final FunctionalBank bank = FunctionalBank.withExchangeRate(EUR, USD, 1.2);
@@ -15,47 +15,44 @@ class FunctionalBankTest {
     @Test
     @DisplayName("10 EUR -> USD = 12 USD")
     void shouldConvertEuroToUsd() {
-        var result = bank.convert(new Money(10, EUR), USD);
-        VavrAssertions.assertThat(result)
+        assertThat(bank.convert(new Money(10, EUR), USD))
                 .containsOnRight(new Money(12, USD));
     }
 
     @Test
     @DisplayName("10 EUR -> EUR = 10 EUR")
     void shouldConvertInSameCurrency() {
-        var result = bank.convert(new Money(10, EUR), EUR);
-        VavrAssertions.assertThat(result).containsOnRight(new Money(10, EUR));
+        assertThat(bank.convert(new Money(10, EUR), EUR))
+                .containsOnRight(new Money(10, EUR));
     }
 
     @Test
-    @DisplayName("Throws a MissingExchangeRateException in case of missing exchange rates")
     void shouldReturnALeftOnMissingExchangeRate() {
-        var result = bank.convert(new Money(10, EUR), KRW);
-        VavrAssertions.assertThat(result).containsOnLeft(new MissingExchangeRateError(EUR, KRW));
+        assertThat(bank.convert(new Money(10, EUR), KRW))
+                .containsOnLeft(new MissingExchangeRateError(EUR, KRW));
     }
 
     @Test
     @DisplayName("Conversion with different exchange rates EUR to USD")
     void shouldConvertWithDifferentExchangeRates() {
-        var result = bank.convert(new Money(10, EUR), USD);
-        VavrAssertions.assertThat(result).containsOnRight(new Money(12, USD));
+        assertThat(bank.convert(new Money(10, EUR), USD))
+                .containsOnRight(new Money(12, USD));
 
-        FunctionalBank updatedBank = bank.addExchangeRate(EUR, USD, 1.3);
-
-        var updatedResult = updatedBank.convert(new Money(10, EUR), USD);
-        VavrAssertions.assertThat(updatedResult).containsOnRight(new Money(13, USD));
+        assertThat(
+                bank.addExchangeRate(EUR, USD, 1.3)
+                        .convert(new Money(10, EUR), USD)
+        ).containsOnRight(new Money(13, USD));
     }
 
     @Test
     void shouldReturnAnEitherWhenConvertCalled() {
-        Either<MissingExchangeRateError, Money> result = bank.convert(new Money(10, EUR), KRW);
-        VavrAssertions.assertThat(result).containsOnLeft(new MissingExchangeRateError(EUR, KRW));
+        assertThat(bank.convert(new Money(10, EUR), KRW))
+                .containsOnLeft(new MissingExchangeRateError(EUR, KRW));
     }
 
     @Test
     void shouldConvertCurrencyWithoutErrorWithResult() {
-        Either<MissingExchangeRateError, Money> result = bank.convert(new Money(10, EUR), USD);
-        VavrAssertions.assertThat(result).containsOnRight(new Money(12, USD));
+        assertThat(bank.convert(new Money(10, EUR), USD))
+                .containsOnRight(new Money(12, USD));
     }
-
 }
