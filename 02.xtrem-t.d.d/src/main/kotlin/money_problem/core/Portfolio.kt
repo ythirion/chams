@@ -1,4 +1,4 @@
-package money_problem.core.core
+package money_problem.core
 
 import arrow.core.Either
 import arrow.core.left

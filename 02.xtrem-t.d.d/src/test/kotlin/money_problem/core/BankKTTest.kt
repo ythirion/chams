@@ -3,10 +3,7 @@ package money_problem.core
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.StringSpec
-import money_problem.core.core.Bank
-import money_problem.core.core.Currency.*
-import money_problem.core.core.MissingExchangeRateError
-import money_problem.core.core.Money
+import money_problem.core.Currency.*
 
 class BankKTTest : StringSpec({
     val bank = Bank.withExchangeRate(EUR, USD, 1.2)

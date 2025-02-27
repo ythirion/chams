@@ -1,4 +1,4 @@
-package money_problem.core.core
+package money_problem.core
 
 data class MissingExchangeRatesError(val errors: List<MissingExchangeRateError>) {
     override fun toString(): String = errors.joinToString(", ", "Missing exchange rates: ")
