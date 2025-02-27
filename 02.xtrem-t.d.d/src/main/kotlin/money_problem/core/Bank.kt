@@ -26,6 +26,7 @@ class Bank private constructor(private val exchangeRates: Map<String, ExchangeRa
     }
 
     companion object {
+        @JvmStatic
         fun withExchangeRate(from: Currency, to: Currency, rate: Double): Bank =
             Bank(HashMap()).addExchangeRate(from, to, rate)
 
