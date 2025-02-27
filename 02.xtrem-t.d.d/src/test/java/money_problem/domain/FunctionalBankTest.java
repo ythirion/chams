@@ -1,6 +1,7 @@
 package money_problem.domain;
 
 import io.vavr.control.Either;
+import money_problem.domain.functional.FunctionalBank;
 import org.assertj.vavr.api.VavrAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

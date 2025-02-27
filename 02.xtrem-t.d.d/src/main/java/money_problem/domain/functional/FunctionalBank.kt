@@ -1,11 +1,17 @@
-package money_problem.domain
+package money_problem.domain.functional
 
 import io.vavr.control.Either
+import money_problem.domain.Currency
+import money_problem.domain.MissingExchangeRateError
 
-class FunctionalBank private constructor(private val exchangeRates: Map<String, Double>) {
+typealias ExchangeRate = Double
+
+class FunctionalBank private constructor(private val exchangeRates: Map<String, ExchangeRate>) {
     private fun convertSafely(money: Money, to: Currency): Money =
         if (money.currency == to) money
-        else Money(money.amount * exchangeRates[keyFor(money.currency, to)]!!, to)
+        else {
+            Money(money.amount * exchangeRates.getOrDefault(keyFor(money.currency, to), 0.0), to)
+        }
 
     private fun Currency.canConvert(to: Currency): Boolean =
         this == to || exchangeRates.containsKey(keyFor(this, to))
