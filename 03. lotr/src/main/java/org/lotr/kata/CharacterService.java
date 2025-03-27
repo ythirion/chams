@@ -2,7 +2,6 @@ package org.lotr.kata;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.lotr.kata.QuestService.CharacterServiceInterface;
 
 public class CharacterService implements CharacterServiceInterface {
     private static CharacterService instance;

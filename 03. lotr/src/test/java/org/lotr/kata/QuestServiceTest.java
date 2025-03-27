@@ -12,9 +12,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.lotr.kata.QuestService.InventoryManagerInterface;
-import org.lotr.kata.QuestService.QuestDatabaseInterface;
-import org.lotr.kata.QuestService.CharacterServiceInterface;
 
 class QuestServiceTest {
     private InventoryManagerInterface inventoryManager;

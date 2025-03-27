@@ -1,14 +1,21 @@
 package org.lotr.kata;
 
-import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class QuestService {
-    private static final Map<QuestType, Integer> QUEST_BASE_REWARDS = new HashMap<>();
+    private static final String WIZARD = "Wizard";
+    private static final Map<QuestType, Integer> QUEST_BASE_REWARDS = new EnumMap<>(QuestType.class);
     private static final Map<String, Map<QuestType, Double>> CHARACTER_BONUSES = new HashMap<>();
-    
+
+    public static final String HOBBIT = "Hobbit";
+
+    public static final String HUMAN = "Human";
+
+    public static final String DWARF = "Dwarf";
+
     static {
         // Initialize base rewards
         QUEST_BASE_REWARDS.put(QuestType.DESTROY_RING, 10000);
@@ -18,7 +25,7 @@ public class QuestService {
         QUEST_BASE_REWARDS.put(QuestType.DIPLOMATIC_MISSION, 400);
         
         // Initialize character type bonuses
-        Map<QuestType, Double> elfBonuses = new HashMap<>();
+        Map<QuestType, Double> elfBonuses = new EnumMap<>(QuestType.class);
         elfBonuses.put(QuestType.DESTROY_RING, 1.1);
         elfBonuses.put(QuestType.DEFEAT_ORCS, 1.2);
         elfBonuses.put(QuestType.ESCORT_HOBBIT, 1.3);
@@ -26,75 +33,43 @@ public class QuestService {
         elfBonuses.put(QuestType.DIPLOMATIC_MISSION, 1.4);
         CHARACTER_BONUSES.put("Elf", elfBonuses);
         
-        Map<QuestType, Double> dwarfBonuses = new HashMap<>();
+        Map<QuestType, Double> dwarfBonuses = new EnumMap<>(QuestType.class);
         dwarfBonuses.put(QuestType.DESTROY_RING, 1.0);
         dwarfBonuses.put(QuestType.DEFEAT_ORCS, 1.4);
         dwarfBonuses.put(QuestType.ESCORT_HOBBIT, 1.0);
         dwarfBonuses.put(QuestType.FIND_ARTIFACT, 1.6);
         dwarfBonuses.put(QuestType.DIPLOMATIC_MISSION, 0.8);
-        CHARACTER_BONUSES.put("Dwarf", dwarfBonuses);
+        CHARACTER_BONUSES.put(DWARF, dwarfBonuses);
         
-        Map<QuestType, Double> humanBonuses = new HashMap<>();
+        Map<QuestType, Double> humanBonuses = new EnumMap<>(QuestType.class);
         humanBonuses.put(QuestType.DESTROY_RING, 1.0);
         humanBonuses.put(QuestType.DEFEAT_ORCS, 1.3);
         humanBonuses.put(QuestType.ESCORT_HOBBIT, 1.2);
         humanBonuses.put(QuestType.FIND_ARTIFACT, 1.1);
         humanBonuses.put(QuestType.DIPLOMATIC_MISSION, 1.5);
-        CHARACTER_BONUSES.put("Human", humanBonuses);
+        CHARACTER_BONUSES.put(HUMAN, humanBonuses);
         
-        Map<QuestType, Double> hobbitBonuses = new HashMap<>();
+        Map<QuestType, Double> hobbitBonuses = new EnumMap<>(QuestType.class);
         hobbitBonuses.put(QuestType.DESTROY_RING, 1.5);
         hobbitBonuses.put(QuestType.DEFEAT_ORCS, 0.7);
         hobbitBonuses.put(QuestType.ESCORT_HOBBIT, 1.0);
         hobbitBonuses.put(QuestType.FIND_ARTIFACT, 1.0);
         hobbitBonuses.put(QuestType.DIPLOMATIC_MISSION, 1.1);
-        CHARACTER_BONUSES.put("Hobbit", hobbitBonuses);
+        CHARACTER_BONUSES.put(HOBBIT, hobbitBonuses);
         
-        Map<QuestType, Double> wizardBonuses = new HashMap<>();
+        Map<QuestType, Double> wizardBonuses = new EnumMap<>(QuestType.class);
         wizardBonuses.put(QuestType.DESTROY_RING, 1.3);
         wizardBonuses.put(QuestType.DEFEAT_ORCS, 1.4);
         wizardBonuses.put(QuestType.ESCORT_HOBBIT, 1.3);
         wizardBonuses.put(QuestType.FIND_ARTIFACT, 1.6);
         wizardBonuses.put(QuestType.DIPLOMATIC_MISSION, 1.7);
-        CHARACTER_BONUSES.put("Wizard", wizardBonuses);
+        CHARACTER_BONUSES.put(WIZARD, wizardBonuses);
     }
-    
-    // Interfaces pour les dépendances externes
-    public interface InventoryManagerInterface {
-        List<MiddleEarthItem> getAllItems();
-        boolean isWarTime();
-        void removeItem(String name, int quantity);
-        void addItem(MiddleEarthItem item);
-        void updateAllItems();
-        void setWarTime(boolean warTime);
-        boolean hasRing();
-        String getInventoryReport(boolean includeRings, boolean includeQualityDetails, String sortBy);
-    }
-    
-    public interface QuestDatabaseInterface {
-        String getCurrentWeather();
-        void saveQuestResult(QuestResult result);
-        void setCurrentWeather(String weather);
-        String generateQuestReport();
-    }
-    
-    public interface CharacterServiceInterface {
-        boolean isCharacterAvailable(String name);
-        String getCharacterType(String name);
-        String getCharacterLevel(String name);
-        void completeQuest(String name, boolean success);
-    }
-    
+
     private InventoryManagerInterface inventoryManager;
     private QuestDatabaseInterface questDatabase;
     private CharacterServiceInterface characterService;
-    
-    public QuestService() {
-        this.inventoryManager = InventoryManager.getInstance();
-        this.questDatabase = QuestDatabase.getInstance();
-        this.characterService = CharacterService.getInstance();
-    }
-    
+
     // Pour les tests - injection de dépendances
     public QuestService(InventoryManagerInterface inventoryManager, 
                       QuestDatabaseInterface questDatabase, 
@@ -153,7 +128,7 @@ public class QuestService {
         double baseSuccessChance = calculateBaseSuccessChance(characterName, questType, companions, items);
         
         // Apply modifiers based on character, companions, items
-        double finalSuccessChance = applyModifiers(baseSuccessChance, characterName, questType, companions, items);
+        double finalSuccessChance = applyModifiers(baseSuccessChance, characterName, questType, companions);
         
         // Determine if quest succeeds
         boolean success = Math.random() < finalSuccessChance;
@@ -222,7 +197,7 @@ public class QuestService {
         return Math.min(Math.max(baseChance, 0.1), 0.95); // Clamp between 10% and 95%
     }
     
-    private double applyModifiers(double baseChance, String characterName, QuestType questType, List<String> companions, List<MiddleEarthItem> items) {
+    private double applyModifiers(double baseChance, String characterName, QuestType questType, List<String> companions) {
         String characterType = characterService.getCharacterType(characterName);
         
         // Apply character type modifier
@@ -253,12 +228,12 @@ public class QuestService {
         
         if (characterType.equals("Hobbit")) {
             for (String companion : companions) {
-                if (characterService.getCharacterType(companion).equals("Wizard")) {
+                if (characterService.getCharacterType(companion).equals(WIZARD)) {
                     hasHobbitAndWizard = true;
                     break;
                 }
             }
-        } else if (characterType.equals("Wizard")) {
+        } else if (characterType.equals(WIZARD)) {
             for (String companion : companions) {
                 if (characterService.getCharacterType(companion).equals("Hobbit")) {
                     hasHobbitAndWizard = true;

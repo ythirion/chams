@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import org.lotr.kata.QuestService.InventoryManagerInterface;
-import org.lotr.kata.QuestService.QuestDatabaseInterface;
-import org.lotr.kata.QuestService.CharacterServiceInterface;
 
 public class MiddleEarthManager {
     private static MiddleEarthManager instance;
