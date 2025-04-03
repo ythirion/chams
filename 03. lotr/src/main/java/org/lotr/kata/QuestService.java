@@ -82,31 +82,10 @@ public class QuestService {
     }
     
     public QuestResult startQuest(String characterName, QuestType questType, List<String> companions, List<MiddleEarthItem> items) {
-        if (!characterService.isCharacterAvailable(characterName)) {
-            throw new IllegalStateException("Character " + characterName + " is not available for quests.");
-        }
-        
-        // Verify companions are available
-        for (String companion : companions) {
-            if (!characterService.isCharacterAvailable(companion)) {
-                throw new IllegalStateException("Companion " + companion + " is not available for quests.");
-            }
-        }
-        
-        // Verify items are in inventory
-        for (MiddleEarthItem item : items) {
-            boolean found = false;
-            for (MiddleEarthItem inventoryItem : inventoryManager.getAllItems()) {
-                if (inventoryItem.n.equals(item.n) && inventoryItem.q >= item.q) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                throw new IllegalStateException("Item " + item.n + " is not available in sufficient quantity.");
-            }
-        }
-        
+        verifyCharacterAndCompanionsAreAvailable(characterName, companions);
+
+        verifyItemsAreInventory(items);
+
         // Check quest specific requirements
         if (questType == QuestType.DESTROY_RING) {
             boolean hasRing = false;
@@ -160,7 +139,25 @@ public class QuestService {
         
         return result;
     }
-    
+
+    private void verifyItemsAreInventory(List<MiddleEarthItem> items) {
+        List<MiddleEarthItem> inventoryItems = inventoryManager.getAllItems();
+        if (items.stream().anyMatch(item -> !inventoryItems.contains(item))) {
+            throw new IllegalStateException("Item is not available in sufficient quantity.");
+        }
+    }
+
+    private void verifyCharacterAndCompanionsAreAvailable(String characterName, List<String> companions) {
+        if (!characterService.isCharacterAvailable(characterName)) {
+            throw new IllegalStateException("Character " + characterName + " is not available for quests.");
+        }
+
+        List<String> unavailableCompanions = companions.stream().filter(companion -> !characterService.isCharacterAvailable(companion)).toList();
+        if (!unavailableCompanions.isEmpty()) {
+            throw new IllegalStateException("Companion " + unavailableCompanions.getFirst() + " is not available for quests.");
+        }
+    }
+
     private double calculateBaseSuccessChance(String characterName, QuestType questType, List<String> companions, List<MiddleEarthItem> items) {
         double baseChance = 0.5; // 50% base chance
         
