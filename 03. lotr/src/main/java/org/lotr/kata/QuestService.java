@@ -138,7 +138,7 @@ public class QuestService {
         // Apply quest effects
         String characterType = characterService.getCharacterType(characterName);
         int rewardAmount = success 
-            ? calculateReward(questType, characterType, companions, items) 
+            ? calculateReward(questType, characterType, companions, items)
             : 0;
         
         // Update character statuses
@@ -189,8 +189,8 @@ public class QuestService {
         // Powerful items help
         for (MiddleEarthItem item : items) {
             if (item.isR) baseChance += 0.15;
-            if (item.isM) baseChance += 0.1;
-            if (item.isG) baseChance += 0.05;
+            if (item.isMithril) baseChance += 0.1;
+            if (item.isGood) baseChance += 0.05;
             if (item.isC) baseChance -= 0.15; // Cursed items hurt chances
         }
 
@@ -272,25 +272,30 @@ public class QuestService {
     private int calculateReward(QuestType questType, String characterType, List<String> companions, List<MiddleEarthItem> items) {
         int baseReward = QUEST_BASE_REWARDS.getOrDefault(questType, 100);
         
-        // Apply character type bonus
+        double typeBonus = getTypeBonus(questType, characterType);
+
+        double finalReward = computeReward(companions, items, baseReward, typeBonus);
+
+        return roundToNearest10(finalReward);
+    }
+
+    private static double computeReward(List<String> companions, List<MiddleEarthItem> items, int baseReward, double typeBonus) {
+        // Companions reduce individual share
+        double finalReward = baseReward * typeBonus / (companions.size() + 1);
+        return items.stream()
+                .mapToDouble(MiddleEarthItem::getTaux)
+                .reduce(finalReward, (reward, taux) -> reward * taux);
+    }
+
+    private static int roundToNearest10(double finalReward) {
+        return (int) (Math.round(finalReward / 10) * 10);
+    }
+
+    private static double getTypeBonus(QuestType questType, String characterType) {
         double typeBonus = 1.0;
         if (CHARACTER_BONUSES.containsKey(characterType) && CHARACTER_BONUSES.get(characterType).containsKey(questType)) {
             typeBonus = CHARACTER_BONUSES.get(characterType).get(questType);
         }
-        
-        // Calculate final reward
-        double finalReward = baseReward * typeBonus;
-        
-        // Companions reduce individual share
-        finalReward = finalReward / (companions.size() + 1);
-        
-        // Special items can increase reward
-        for (MiddleEarthItem item : items) {
-            if (item.isG) finalReward *= 1.1;
-            if (item.isM) finalReward *= 1.2;
-        }
-        
-        // Round to nearest 10
-        return (int) (Math.round(finalReward / 10) * 10);
+        return typeBonus;
     }
 }

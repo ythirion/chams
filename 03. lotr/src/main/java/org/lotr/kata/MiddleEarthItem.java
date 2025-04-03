@@ -7,9 +7,9 @@ public class MiddleEarthItem {
     public int p = 0;
     public ItemOrigin o;
     public boolean isR = false;
-    public boolean isG = false;
+    public boolean isGood = false;
     public boolean isE = false;
-    public boolean isM = false;
+    public boolean isMithril = false;
     public boolean isC = false;
     public int m = 0;
 
@@ -29,13 +29,13 @@ public class MiddleEarthItem {
         }
         
         if (name.contains("Mithril")) {
-            this.isM = true;
+            this.isMithril = true;
             this.p = 800;
         }
         
         if ((quality > 80) && origin == ItemOrigin.GONDOR) {
             this.p = quality * 2;
-            this.isG = true;
+            this.isGood = true;
         } else if (quality > 65) {
             this.p = quality;
         } else {
@@ -69,11 +69,11 @@ public class MiddleEarthItem {
             }
         }
         
-        if (this.isM && (dayOfWeek.equals("Thursday") || dayOfWeek.equals("Friday"))) {
+        if (this.isMithril && (dayOfWeek.equals("Thursday") || dayOfWeek.equals("Friday"))) {
             pr = (int) (pr * 1.15);
         }
         
-        if (this.isG && dayOfWeek.equals("Wednesday")) {
+        if (this.isGood && dayOfWeek.equals("Wednesday")) {
             pr = (int) (pr * 0.95);
         }
         
@@ -82,12 +82,12 @@ public class MiddleEarthItem {
     
     public void updateQuality() {
         if (this.qual > 0) {
-            if (!this.isG) {
+            if (!this.isGood) {
                 this.qual = this.qual - 1;
             }
         }
         
-        if (this.isG) {
+        if (this.isGood) {
             if (this.qual < 50) {
                 this.qual = this.qual + 1;
             }
@@ -108,7 +108,7 @@ public class MiddleEarthItem {
             }
         }
         
-        if (this.isM) {
+        if (this.isMithril) {
             if (this.qual < 90) {
                 this.qual = this.qual + 1;
             }
@@ -125,5 +125,14 @@ public class MiddleEarthItem {
         if (this.m > 0) {
             this.m = this.m - 1;
         }
+    }
+
+    public double getTaux() {
+        if (this.isGood) {
+            return 1.1;
+        } else if (this.isMithril) {
+            return 1.2;
+        }
+        return 1.0;
     }
 }

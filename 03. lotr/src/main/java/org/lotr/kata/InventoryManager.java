@@ -126,7 +126,7 @@ public class InventoryManager implements InventoryManagerInterface {
             item.updateQuality();
             
             // Remove completely degraded items
-            if (item.qual <= 0 && !item.isE && !item.isG && !item.isM) {
+            if (item.qual <= 0 && !item.isE && !item.isGood && !item.isMithril) {
                 itemsToRemove.add(item);
             }
         }
@@ -211,9 +211,9 @@ public class InventoryManager implements InventoryManagerInterface {
             
             if (includeQualityDetails) {
                 report.append(", Quality: ").append(item.qual);
-                if (item.isG) report.append(" [Good]");
+                if (item.isGood) report.append(" [Good]");
                 if (item.isC) report.append(" [Cursed]");
-                if (item.isM) report.append(" [Mithril]");
+                if (item.isMithril) report.append(" [Mithril]");
                 if (item.isE) report.append(" [Magic Level: ").append(item.m).append("]");
             }
             
