@@ -16,6 +16,8 @@ public class QuestService {
 
     public static final String DWARF = "Dwarf";
 
+    public static final String ELF = "Elf";
+
     static {
         // Initialize base rewards
         QUEST_BASE_REWARDS.put(QuestType.DESTROY_RING, 10000);
@@ -31,7 +33,7 @@ public class QuestService {
         elfBonuses.put(QuestType.ESCORT_HOBBIT, 1.3);
         elfBonuses.put(QuestType.FIND_ARTIFACT, 1.5);
         elfBonuses.put(QuestType.DIPLOMATIC_MISSION, 1.4);
-        CHARACTER_BONUSES.put("Elf", elfBonuses);
+        CHARACTER_BONUSES.put(ELF, elfBonuses);
         
         Map<QuestType, Double> dwarfBonuses = new EnumMap<>(QuestType.class);
         dwarfBonuses.put(QuestType.DESTROY_RING, 1.0);
@@ -119,7 +121,7 @@ public class QuestService {
             }
         }
         
-        if (questType == QuestType.DIPLOMATIC_MISSION && characterService.getCharacterType(characterName).equals("Hobbit") 
+        if (questType == QuestType.DIPLOMATIC_MISSION && characterService.getCharacterType(characterName).equals(HOBBIT)
             && !characterService.getCharacterLevel(characterName).equals("Experienced")) {
             throw new IllegalStateException("Inexperienced Hobbits cannot lead diplomatic missions.");
         }
@@ -164,15 +166,13 @@ public class QuestService {
         
         // Adjust based on character level
         String level = characterService.getCharacterLevel(characterName);
-        if (level.equals("Novice")) {
-            baseChance -= 0.2;
-        } else if (level.equals("Experienced")) {
-            baseChance += 0.1;
-        } else if (level.equals("Veteran")) {
-            baseChance += 0.2;
-        } else if (level.equals("Legendary")) {
-            baseChance += 0.3;
-        }
+        baseChance += switch (level) {
+            case "Novice" -> -0.2;
+            case "Experienced" -> 0.1;
+            case "Veteran" -> 0.2;
+            case "Legendary" -> 0.3;
+            default -> 0;
+        };
         
         // Adjust based on quest type
         if (questType == QuestType.DESTROY_RING) {
@@ -193,8 +193,8 @@ public class QuestService {
             if (item.isG) baseChance += 0.05;
             if (item.isC) baseChance -= 0.15; // Cursed items hurt chances
         }
-        
-        return Math.min(Math.max(baseChance, 0.1), 0.95); // Clamp between 10% and 95%
+
+        return Math.clamp(baseChance, 0.1, 0.95); // Clamp between 10% and 95%
     }
     
     private double applyModifiers(double baseChance, String characterName, QuestType questType, List<String> companions) {
@@ -210,23 +210,23 @@ public class QuestService {
         boolean hasElfAndDwarf = false;
         boolean hasHobbitAndWizard = false;
         
-        if (characterType.equals("Elf")) {
+        if (characterType.equals(ELF)) {
             for (String companion : companions) {
-                if (characterService.getCharacterType(companion).equals("Dwarf")) {
+                if (characterService.getCharacterType(companion).equals(DWARF)) {
                     hasElfAndDwarf = true;
                     break;
                 }
             }
-        } else if (characterType.equals("Dwarf")) {
+        } else if (characterType.equals(DWARF)) {
             for (String companion : companions) {
-                if (characterService.getCharacterType(companion).equals("Elf")) {
+                if (characterService.getCharacterType(companion).equals(ELF)) {
                     hasElfAndDwarf = true;
                     break;
                 }
             }
         }
         
-        if (characterType.equals("Hobbit")) {
+        if (characterType.equals(HOBBIT)) {
             for (String companion : companions) {
                 if (characterService.getCharacterType(companion).equals(WIZARD)) {
                     hasHobbitAndWizard = true;
@@ -235,7 +235,7 @@ public class QuestService {
             }
         } else if (characterType.equals(WIZARD)) {
             for (String companion : companions) {
-                if (characterService.getCharacterType(companion).equals("Hobbit")) {
+                if (characterService.getCharacterType(companion).equals(HOBBIT)) {
                     hasHobbitAndWizard = true;
                     break;
                 }
@@ -265,8 +265,8 @@ public class QuestService {
                 baseChance -= 0.2; // Diplomacy harder during war
             }
         }
-        
-        return Math.min(Math.max(baseChance, 0.1), 0.95); // Clamp between 10% and 95%
+
+        return Math.clamp(baseChance, 0.1, 0.95); // Clamp between 10% and 95%
     }
     
     private int calculateReward(QuestType questType, String characterType, List<String> companions, List<MiddleEarthItem> items) {
