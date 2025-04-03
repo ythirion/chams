@@ -15,7 +15,7 @@ import java.util.Map;
 
 class QuestServiceTest {
     private InventoryManagerInterface inventoryManager;
-    private QuestDatabaseInterface questDatabase;
+    private TestQuestDatabase questDatabase;
     private CharacterServiceInterface characterService;
     private QuestService questService;
     
@@ -49,6 +49,8 @@ class QuestServiceTest {
         assertThat(result.getCharacterName()).isEqualTo(character);
         assertThat(result.getQuestType()).isEqualTo(QuestType.DESTROY_RING);
         assertThat(result.getCompanions()).containsExactly("Sam");
+
+        assertThat(questDatabase.HasStored(result)).isTrue();
         // Can't reliably test success because it involves randomness
         // Would need to modify the code to allow deterministic testing
     }
@@ -211,7 +213,8 @@ class QuestServiceTest {
     
     private static class TestQuestDatabase implements QuestDatabaseInterface {
         private String weather = "Clear";
-        
+        private QuestResult storedResult;
+
         @Override
         public String getCurrentWeather() {
             return weather;
@@ -228,12 +231,16 @@ class QuestServiceTest {
         
         @Override
         public void saveQuestResult(QuestResult result) {
-            // Do nothing for tests
+            storedResult = result;
         }
         
         @Override
         public String generateQuestReport() {
             return "Test Quest Report";
+        }
+
+        public boolean HasStored(QuestResult result) {
+            return storedResult != null && result == storedResult;
         }
     }
     
