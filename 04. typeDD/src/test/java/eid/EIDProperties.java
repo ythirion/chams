@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class EIDProperties {
-    private final Arbitrary<EID> validEID = null;
+    private final Arbitrary<EID> validEID = Arbitrary.of(new EID());
 
     @Test
     void roundTrip() {
