@@ -1,14 +1,15 @@
 package eid;
 
 import io.vavr.test.Arbitrary;
+import io.vavr.test.Gen;
 import io.vavr.test.Property;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 class EIDProperties {
-    private final Arbitrary<EID> validEID = Arbitrary.of(new EID());
+    private final Gen<Sex> sexGenerator = Gen.choose(Sex.values());
+    private final Arbitrary<EID> validEID = sexGenerator.map(EID::new).arbitrary();
 
+    // https://github.com/advent-of-craft/2024/blob/main/docs/day17/solution/step-by-step.md
     @Test
     void roundTrip() {
         Property.def("parseEID(eid.toString) == eid")
