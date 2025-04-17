@@ -17,84 +17,52 @@ public class QuestService {
         this.characterService = characterService;
     }
 
-    public QuestResult startQuest(String characterName, QuestType questType, List<String> companions, List<MiddleEarthItem> items) {
-        verifyCharacterAndCompanionsAreAvailable(characterName, companions);
+    public QuestResult startQuest(String characterName, QuestType questType, List<String> companionNames, List<MiddleEarthItem> middleEarthItems) {
+        var companions = Companions.from(characterService, characterName, companionNames);
+        var items = MiddleEarthItems.from(inventoryManager, middleEarthItems);
+        var characterType = characterService.getCharacterType(characterName);
 
-        verifyItemsAreInventory(items);
+        veryQuest(characterName, questType, items);
 
-        // Check quest specific requirements
-        if (questType == QuestType.DESTROY_RING) {
-            boolean hasRing = false;
-            for (MiddleEarthItem item : items) {
-                if (item.isR) {
-                    hasRing = true;
-                    break;
-                }
-            }
-            if (!hasRing) {
-                throw new IllegalStateException("Cannot start DESTROY_RING quest without a ring!");
-            }
-        }
+        var success = defineSuccess(characterName, questType, companions, items);
+        var rewardAmount = calculateRewardAmount(questType, success, characterType, companions, items);
 
-        if (questType == QuestType.DIPLOMATIC_MISSION && characterService.getCharacterType(characterName).equals(HOBBIT)
-                && !characterService.getCharacterLevel(characterName).equals("Experienced")) {
-            throw new IllegalStateException("Inexperienced Hobbits cannot lead diplomatic missions.");
-        }
-
-        // Calculate quest success chance
-        double baseSuccessChance = calculateBaseSuccessChance(characterName, questType, companions, items);
-
-        // Apply modifiers based on character, companions, items
-        double finalSuccessChance = applyModifiers(baseSuccessChance, characterName, questType, companions);
-
-        // Determine if quest succeeds
-        boolean success = Math.random() < finalSuccessChance;
-
-        // Apply quest effects
-        String characterType = characterService.getCharacterType(characterName);
-        int rewardAmount = success
-                ? calculateReward(questType, characterType, companions, items)
-                : 0;
-
-        // Update character statuses
         characterService.completeQuest(characterName, success);
-        for (String companion : companions) {
-            characterService.completeQuest(companion, success);
-        }
+        companions.completeQuest(success);
+        items.removeConsumedItems(inventoryManager, questType);
 
-        // Remove consumed items
-        for (MiddleEarthItem item : items) {
-            if ((questType == QuestType.DESTROY_RING && item.isR) || Math.random() < 0.2) {
-                inventoryManager.removeItem(item.n, item.q);
-            }
-        }
-
-        // Create and save quest result
-        QuestResult result = new QuestResult(characterName, questType, success, rewardAmount, companions);
+        var result = new QuestResult(characterName, questType, success, rewardAmount, companions);
         questDatabase.saveQuestResult(result);
 
         return result;
     }
 
-    private void verifyItemsAreInventory(List<MiddleEarthItem> items) {
-        List<MiddleEarthItem> inventoryItems = inventoryManager.getAllItems();
-        if (items.stream().anyMatch(item -> !inventoryItems.contains(item))) {
-            throw new IllegalStateException("Item is not available in sufficient quantity.");
+    private int calculateRewardAmount(QuestType questType, boolean success, String characterType, Companions companions, MiddleEarthItems items) {
+        return success
+                ? calculateReward(questType, characterType, companions, items)
+                : 0;
+    }
+
+    private boolean defineSuccess(String characterName, QuestType questType, Companions companions, MiddleEarthItems items) {
+        var baseSuccessChance = calculateBaseSuccessChance(characterName, questType, companions, items);
+        var finalSuccessChance = applyModifiers(baseSuccessChance, characterName, questType, companions);
+
+        return Math.random() < finalSuccessChance;
+    }
+
+    private void veryQuest(String characterName, QuestType questType, MiddleEarthItems items) {
+        if (questType == QuestType.DESTROY_RING && !items.containsRing()) {
+            throw new IllegalStateException("Cannot start DESTROY_RING quest without a ring!");
+        }
+
+        if (questType == QuestType.DIPLOMATIC_MISSION
+                && characterService.getCharacterType(characterName).equals(HOBBIT)
+                && !characterService.getCharacterLevel(characterName).equals("Experienced")) {
+            throw new IllegalStateException("Inexperienced Hobbits cannot lead diplomatic missions.");
         }
     }
 
-    private void verifyCharacterAndCompanionsAreAvailable(String characterName, List<String> companions) {
-        if (!characterService.isCharacterAvailable(characterName)) {
-            throw new IllegalStateException("Character " + characterName + " is not available for quests.");
-        }
-
-        List<String> unavailableCompanions = companions.stream().filter(companion -> !characterService.isCharacterAvailable(companion)).toList();
-        if (!unavailableCompanions.isEmpty()) {
-            throw new IllegalStateException("Companion " + unavailableCompanions.getFirst() + " is not available for quests.");
-        }
-    }
-
-    private double calculateBaseSuccessChance(String characterName, QuestType questType, List<String> companions, List<MiddleEarthItem> items) {
+    private double calculateBaseSuccessChance(String characterName, QuestType questType, Companions companions, List<MiddleEarthItem> items) {
         double baseChance = 0.5; // 50% base chance
 
         // Adjust based on character level
@@ -116,12 +84,11 @@ public class QuestService {
             baseChance -= 0.1; // Somewhat difficult
         }
 
-        // Adjust based on number of companions
-        baseChance += companions.size() * 0.05;
+        baseChance += companions.getBaseChance();
 
         // Powerful items help
         for (MiddleEarthItem item : items) {
-            if (item.isR) baseChance += 0.15;
+            if (item.isRing) baseChance += 0.15;
             if (item.isMithril) baseChance += 0.1;
             if (item.isGood) baseChance += 0.05;
             if (item.isC) baseChance -= 0.15; // Cursed items hurt chances
@@ -130,7 +97,7 @@ public class QuestService {
         return Math.clamp(baseChance, 0.1, 0.95); // Clamp between 10% and 95%
     }
 
-    private double applyModifiers(double baseChance, String characterName, QuestType questType, List<String> companions) {
+    private double applyModifiers(double baseChance, String characterName, QuestType questType, Companions companions) {
         String characterType = characterService.getCharacterType(characterName);
 
         // Apply character type modifier
@@ -139,47 +106,10 @@ public class QuestService {
             baseChance *= typeBonus;
         }
 
-        // Check for special combinations
-        boolean hasElfAndDwarf = false;
-        boolean hasHobbitAndWizard = false;
-
-        if (characterType.equals(ELF)) {
-            for (String companion : companions) {
-                if (characterService.getCharacterType(companion).equals(DWARF)) {
-                    hasElfAndDwarf = true;
-                    break;
-                }
-            }
-        } else if (characterType.equals(DWARF)) {
-            for (String companion : companions) {
-                if (characterService.getCharacterType(companion).equals(ELF)) {
-                    hasElfAndDwarf = true;
-                    break;
-                }
-            }
-        }
-
-        if (characterType.equals(HOBBIT)) {
-            for (String companion : companions) {
-                if (characterService.getCharacterType(companion).equals(WIZARD)) {
-                    hasHobbitAndWizard = true;
-                    break;
-                }
-            }
-        } else if (characterType.equals(WIZARD)) {
-            for (String companion : companions) {
-                if (characterService.getCharacterType(companion).equals(HOBBIT)) {
-                    hasHobbitAndWizard = true;
-                    break;
-                }
-            }
-        }
-
-        // Apply special combination bonuses
-        if (hasElfAndDwarf) {
+        if (companions.containsElfAndDwarf()) {
             baseChance += 0.05; // Unlikely alliance bonus
         }
-        if (hasHobbitAndWizard) {
+        if (companions.containsHobbitAndWizard()) {
             baseChance += 0.1; // Fellowship bonus
         }
 
@@ -202,7 +132,7 @@ public class QuestService {
         return Math.clamp(baseChance, 0.1, 0.95); // Clamp between 10% and 95%
     }
 
-    private int calculateReward(QuestType questType, String characterType, List<String> companions, List<MiddleEarthItem> items) {
+    private int calculateReward(QuestType questType, String characterType, Companions companions, List<MiddleEarthItem> items) {
         var baseReward = QUEST_BASE_REWARDS.getOrDefault(questType, 100);
         var typeBonus = getTypeBonus(questType, characterType);
         var finalReward = computeReward(companions, items, baseReward, typeBonus);
@@ -210,7 +140,7 @@ public class QuestService {
         return roundToNearest10(finalReward);
     }
 
-    private static double computeReward(List<String> companions, List<MiddleEarthItem> items, int baseReward, double typeBonus) {
+    private static double computeReward(Companions companions, List<MiddleEarthItem> items, int baseReward, double typeBonus) {
         double finalReward = baseReward * typeBonus / (companions.size() + 1);
         return items.stream()
                 .mapToDouble(MiddleEarthItem::getRate)

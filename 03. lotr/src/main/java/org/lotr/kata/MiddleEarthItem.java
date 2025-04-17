@@ -6,7 +6,7 @@ public class MiddleEarthItem {
     public int qual;
     public int p = 0;
     public ItemOrigin o;
-    public boolean isR = false;
+    public boolean isRing = false;
     public boolean isGood = false;
     public boolean isE = false;
     public boolean isMithril = false;
@@ -20,7 +20,7 @@ public class MiddleEarthItem {
         this.o = origin;
 
         if (name.contains("Ring") && origin == ItemOrigin.MORDOR) {
-            this.isR = true;
+            this.isRing = true;
             if (name.contains("One")) {
                 this.isE = true;
                 this.p = 10000;
@@ -51,9 +51,9 @@ public class MiddleEarthItem {
     // Used by the shops to calculate price after haggle
     public int getFinalPrice(boolean isHaggling, String dayOfWeek) {
         int pr = 0;
-        if (isHaggling && !this.isR) {
+        if (isHaggling && !this.isRing) {
             pr = (int) (this.p * 0.9);
-        } else if (isHaggling && this.isR) {
+        } else if (isHaggling && this.isRing) {
             pr = this.p;
         } else {
             pr = this.p;
@@ -102,7 +102,7 @@ public class MiddleEarthItem {
 
         if (this.isE) {
             // The One Ring doesn't change quality
-        } else if (this.isR) {
+        } else if (this.isRing) {
             if (this.qual > 80) {
                 this.qual = this.qual - 1;
             }
@@ -114,7 +114,7 @@ public class MiddleEarthItem {
             }
         }
 
-        if (this.o == ItemOrigin.MORDOR && !this.isR) {
+        if (this.o == ItemOrigin.MORDOR && !this.isRing) {
             this.qual = this.qual - 2;
             if (this.qual < 0) {
                 this.qual = 0;
