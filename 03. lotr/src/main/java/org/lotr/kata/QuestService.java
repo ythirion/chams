@@ -17,19 +17,19 @@ public class QuestService {
         this.characterService = characterService;
     }
 
-    public QuestResult startQuest(String characterName, QuestType questType, List<String> companionNames, List<MiddleEarthItem> middleEarthItems) {
+    public QuestResult startQuest(String characterName, QuestType questType, List<String> companionNames, List<MiddleEarthItem> items) {
         var companions = Companions.from(characterService, characterName, companionNames);
-        var items = MiddleEarthItems.from(inventoryManager, middleEarthItems);
+        var middleEarthItems = MiddleEarthItems.from(inventoryManager, items);
         var characterType = characterService.getCharacterType(characterName);
 
-        veryQuest(characterName, questType, items);
+        veryQuest(characterName, questType, middleEarthItems);
 
-        var success = defineSuccess(characterName, questType, companions, items);
-        var rewardAmount = calculateRewardAmount(questType, success, characterType, companions, items);
+        var success = defineSuccess(characterName, questType, companions, middleEarthItems);
+        var rewardAmount = calculateRewardAmount(questType, success, characterType, companions, middleEarthItems);
 
         characterService.completeQuest(characterName, success);
         companions.completeQuest(success);
-        items.removeConsumedItems(inventoryManager, questType);
+        middleEarthItems.removeConsumedItems(inventoryManager, questType);
 
         var result = new QuestResult(characterName, questType, success, rewardAmount, companions);
         questDatabase.saveQuestResult(result);
